@@ -25,7 +25,7 @@
 #define MY_DEST_MAC4 0xFF
 #define MY_DEST_MAC5 0xFF
 
-JNIEXPORT void JNICALL Java_packetmaker_RawPacketSender_sendPacket
+JNIEXPORT void JNICALL Java_packetconstructor_RawPacketSender_sendPacket
   (JNIEnv *env, jobject obj, jbyteArray buffer){
     printf("Sending data...\n");
     //note that jsize is just an int!
