@@ -10,26 +10,34 @@ import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.FlowPane;
 
-/**
- *
- * @author root
- */
+
 public class FXMLDocumentController implements Initializable {
     
     @FXML
-    private Label label;
+    ComboBox<String> firstCombo; 
     
     @FXML
-    private void handleButtonAction(ActionEvent event) {
-        System.out.println("You clicked me!");
-        label.setText("Hello World!");
-    }
+    Button sendButton;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
-    }    
+        //firstCombo.setPromptText("WAZZUP");
+        //firstTextField.setText("Greetings");
+    } 
+    
+    @FXML
+    public void sendButtonPressed(ActionEvent e){
+        System.out.println("GREETINGS!");
+        //byte[] myBuffer = Utilities.hexStringToByteArray("5254001235000800276fee3a080600010800060400010800276fee3a0a00020f0000000000000a000201");
+        byte[] myBuffer = Utilities.hexStringToByteArray(firstCombo.getValue());
+        new RawPacketSender().sendPacket(myBuffer);
+    }
     
 }

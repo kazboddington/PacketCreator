@@ -20,6 +20,4 @@ public class EthernetHeader extends Header {
         super.addField(sourceMac);
         super.addField(etherType);
     }
-    
-
 }
