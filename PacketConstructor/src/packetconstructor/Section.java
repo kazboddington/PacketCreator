@@ -7,10 +7,10 @@ package packetconstructor;
 
 import java.util.ArrayList;
 
-public abstract class Header {
+public abstract class Section {
     private String name;
     private int numberOfFields;
-    private ArrayList<Field> fields;
+    private ArrayList<Field> fields = new ArrayList<Field>();
 
     void setName(String name) {
         this.name = name;
@@ -21,7 +21,16 @@ public abstract class Header {
     }
 
     void addField(Field destinationMac) {
-        this.fields.add(destinationMac);
+        this.getFields().add(destinationMac);
     }
+
+    public ArrayList<Field> getFields() {
+        return fields;
+    }
+
+    public String getName() {
+        return name;
+    }
+    
     
 }

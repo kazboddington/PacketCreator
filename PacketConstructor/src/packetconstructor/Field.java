@@ -13,11 +13,11 @@ public class Field {
     private String description;
     private String name;
     
-    public Field(String name ,int length, String description){
+    public Field(String name, BitSet value, int length, String description){
         this.name = name;
         this.length = length;
         this.description = description;
-        
+        this.value = value;
     }
     public int getLength(){
         return length;

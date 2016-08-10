@@ -8,5 +8,16 @@ package packetconstructor;
 import java.util.ArrayList;
 
 public class Packet {
-    private ArrayList<Field> fields;
+    
+    ArrayList<Section> sections = new ArrayList<Section>();
+    
+    public ArrayList<Section> getSections() {
+        return sections;
+    }
+    
+    public void addSection(Section section){
+        this.sections.add(section);
+    }    
+    
+    
 }
