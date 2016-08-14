@@ -17,8 +17,8 @@ public class EthernetHeader extends Section {
         if (source.length() != 48 && destination.length() != 48 && etherType.length() != 16){
             System.out.print("Ethernet was initialised with incorrect sized fields");
         }
-        this.destinationMac = new Field("DestinationMac", destination, 48, "This is the Destination Mac Address");
-        this.sourceMac = new Field("SourceMac", source,48 , "The Source mac address of the ");
+        this.destinationMac = new Field("Destination Mac", destination, 48, "This is the Destination Mac Address");
+        this.sourceMac = new Field("Source Mac", source,48 , "The Source mac address of the ");
         this.etherType = new Field("Ethernet Type", etherType, 16, "The Type of Ethernet type (version?)");
         super.setName("Ethernet Header");
         super.setNumberOfFields(3);

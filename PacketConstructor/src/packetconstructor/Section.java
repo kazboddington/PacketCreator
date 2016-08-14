@@ -11,6 +11,7 @@ public abstract class Section {
     private String name;
     private int numberOfFields;
     private ArrayList<Field> fields = new ArrayList<Field>();
+    private int preferredWidth = 48;
 
     void setName(String name) {
         this.name = name;
@@ -20,8 +21,8 @@ public abstract class Section {
         this.numberOfFields = i;
     }
 
-    void addField(Field destinationMac) {
-        this.getFields().add(destinationMac);
+    void addField(Field field) {
+        this.getFields().add(field);
     }
 
     public ArrayList<Field> getFields() {
@@ -30,6 +31,16 @@ public abstract class Section {
 
     public String getName() {
         return name;
+    }
+
+
+    public int getPreferredWidth() {
+	return preferredWidth;
+    }
+
+  
+    public void setPreferredWidth(int preferredWidth) {
+	this.preferredWidth = preferredWidth;
     }
     
     

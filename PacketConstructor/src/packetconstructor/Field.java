@@ -25,10 +25,27 @@ public class Field {
     public BitSet getValue(){
         return value;
     }
+    public String getValueAsString(){
+	String retVal = Utilities.bytesToHex(this.getValue().toByteArray());
+	//adjust for extra chars at front
+	if (retVal.length()*4 -3 > this.getLength()){
+	    retVal = retVal.substring(1);
+	}else if (retVal.length()*4 < this.getLength()){
+	    //adjust for missing chars before;
+	    for (int i = 0; i < (this.getLength()-retVal.length()*4); i++){
+		retVal = "0" + retVal;
+	    }   
+	}
+	return retVal;
+    }
     public String getDescription(){
         return description;
     }
     public String getName(){
         return name;
+    }
+
+    public void setValue(BitSet value) {
+	this.value = value;
     }
 }

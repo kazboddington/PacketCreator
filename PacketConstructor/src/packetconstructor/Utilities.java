@@ -5,6 +5,8 @@
  */
 package packetconstructor;
 
+import java.util.BitSet;
+
 
 public final class Utilities {
     final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
@@ -26,4 +28,16 @@ public final class Utilities {
         }
     return data;
     }
+    public static BitSet bitSetFromHex(String s){
+	if (s.length() < 1){
+	    System.out.println("Length of Hex too small");
+	}
+	if((s.length() %2) == 1){
+	    s = "0" + s ;
+	}
+	BitSet returnVal = BitSet.valueOf(hexStringToByteArray(s));
+	System.out.println(returnVal);
+	return returnVal;
+    }
+    
 }
