@@ -41,7 +41,7 @@ public class RawPacketSender {
             }
         }
 	
-        System.out.println("Sending..." +bitsToSend);
+        System.out.println("Sending..." + bitsToSend);
         byte[] bytesToSend = bitsToSend.toByteArray();
         System.out.println(Utilities.bytesToHex(bytesToSend));
         new RawPacketSender().sendPacket(bytesToSend);

@@ -5,6 +5,7 @@
  */
 package packetconstructor;
 
+import java.math.BigInteger;
 import java.util.BitSet;
 
 
@@ -36,8 +37,57 @@ public final class Utilities {
 	    s = "0" + s ;
 	}
 	BitSet returnVal = BitSet.valueOf(hexStringToByteArray(s));
-	System.out.println(returnVal);
 	return returnVal;
+    }
+    
+    public static String insertPeriodically(String text, String insert, int period){
+	StringBuilder builder = new StringBuilder(
+	     text.length() + insert.length() * (text.length()/period)+1);
+
+	int index = 0;
+	String prefix = "";
+	while (index < text.length())
+	{
+	    // Don't put the insert in the very first iteration.
+	    // This is easier than appending it *after* each substring
+	    builder.append(prefix);
+	    prefix = insert;
+	    builder.append(text.substring(index, 
+		Math.min(index + period, text.length())));
+	    index += period;
+	}
+	return builder.toString();
+    }
+    
+    static String hexToBin(String s) {
+	String retVal = new BigInteger(s, 16).toString(2);
+	
+	if (retVal.length() % 2 == 1)
+	    retVal = "0"+ retVal;
+	for (int i = 0; i< s.length() ;i++){
+	    if (s.charAt(i) == '0'){
+		retVal = "0000" + retVal; 
+	    }else{
+		break;
+    	    }
+	}
+	return retVal;
+    }
+    
+    public static String hexToDecimal(String s){
+	//TODO support longer values
+	return String.valueOf(Long.parseLong(s, 16));
+    }
+    
+    public static String hexToDecimalBytesWithSpaces(String s){
+	if (s.length() % 2 == 1 )
+	    s = "0" + s;
+	    String retVal = "";
+	for (int i = 0; i < s.length()-1; i+=2){
+	    retVal += Integer.parseInt(s.substring(i,i+2),16) + " ";
+	}
+	
+	return retVal;
     }
     
 }
