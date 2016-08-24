@@ -10,13 +10,11 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TextField;
 
-
 public class PacketTextField extends TextField {
-
     private final int limit;
-    private final Field field;
+    private Field field;
     private  boolean textShouldBeZero = false;
-	    
+    
     public PacketTextField(Field field) {
         this.limit = field.getLength()/4;
 	this.field = field;
@@ -30,6 +28,20 @@ public class PacketTextField extends TextField {
   
     public void setTextShouldBeZero(boolean textShouldBeZero) {
 	this.textShouldBeZero = textShouldBeZero;
+    }
+
+    /**
+     * @return the field
+     */
+    public Field getField() {
+	return field;
+    }
+
+    /**
+     * @param field the field to set
+     */
+    public void setField(Field field) {
+	this.field = field;
     }
     
 

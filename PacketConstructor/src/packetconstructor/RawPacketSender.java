@@ -13,11 +13,9 @@ public class RawPacketSender {
             BitSet bitsToSend = new BitSet();
         int currentLength = 0;
         for (Section section : p.getSections()){
-            System.out.println("Section is: \t" +  section.getName());
 	    int buff = 8;
             for(Field field: section.getFields()){
-                System.out.println("\tField is: \t" + field.getName());
-                System.out.println("\t\t\t" + Utilities.bytesToHex(field.getValue().toByteArray()));
+		
 		int remaining = field.getLength();
 		BitSet bitsOfField = field.getValue();
 		int sectionPos = 0;
@@ -41,9 +39,7 @@ public class RawPacketSender {
             }
         }
 	
-        System.out.println("Sending..." + bitsToSend);
         byte[] bytesToSend = bitsToSend.toByteArray();
-        System.out.println(Utilities.bytesToHex(bytesToSend));
         new RawPacketSender().sendPacket(bytesToSend);
     }
     

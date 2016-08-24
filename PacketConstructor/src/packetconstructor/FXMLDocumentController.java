@@ -35,29 +35,19 @@ import jdk.nashorn.internal.runtime.CodeStore;
 
 public class FXMLDocumentController implements Initializable {
     
-    @FXML
-    VBox rightSideCustomContent;
-    
-    @FXML
+    @FXML VBox rightSideCustomContent;
     Packet displayedPacket;
+    @FXML Label rightPanelFieldTitleLabel;
+    @FXML VBox rightSideVBox;
+    @FXML Label descriptionText; 
+    @FXML TextFlow descriptionTextFlow;
+    @FXML VBox centralDisplay;
+    @FXML Button sendButton;
+    @FXML Label userMacLabel;
+    @FXML Label userIpLabel;
+    ArrayList<PacketTextField> packetTextFields = new ArrayList<>();
+    private InternetConfigurations configurations;
     
-    @FXML 
-    Label rightPanelFieldTitleLabel;
-    
-    @FXML
-    VBox rightSideVBox;
-    
-    @FXML 
-    Label descriptionText;
-    
-    @FXML
-    TextFlow descriptionTextFlow;
-    
-    @FXML
-    VBox centralDisplay;
-
-    @FXML
-    Button sendButton;
     
     void initializePacket(){
         //create and initialise new packet
@@ -81,6 +71,7 @@ public class FXMLDocumentController implements Initializable {
 	    FlowPane sectionPane = new FlowPane();
 	    sectionPane.setMaxWidth(section.getPreferredWidth()*10);
 	    for (Field field: section.getFields()){
+		
 		//create VBox to place field in
 		VBox fieldBox = new VBox();
 		
@@ -89,20 +80,26 @@ public class FXMLDocumentController implements Initializable {
 		fieldNameLabel.setMaxWidth(field.getLength()*10);
 		//Create custom textBox to display field
 		PacketTextField textBox = new PacketTextField(field);
+		packetTextFields.add(textBox);
+		
 		addTextUpdateListener(textBox, (field.getLength()+3)/4,field);
 		textBox.setEditable(true);
 		textBox.setText(field.getValueAsString());
 		textBox.setMaxWidth(field.getLength()*10);
 		textBox.setMinSize(field.getLength()*10, textBox.getHeight());
-		textBox.setOnMouseClicked((MouseEvent event) -> {
+		textBox.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
 		    //Sort out Side Bar
-		    
-		    descriptionText.setText(field.getDescription());
-		    rightPanelFieldTitleLabel.setText(field.getName());
-		    
-		    rightSideCustomContent.getChildren().clear();
-		    addSideBarInfo(field, rightSideCustomContent);
+		    if (newValue){
+			userIpLabel.setText("Your IP is: " + configurations.getIp());
+			userMacLabel.setText("Mac address is " + InternetConfigurations.getMacAddress());
+			descriptionText.setText(field.getDescription());
+			rightPanelFieldTitleLabel.setText(field.getName());
+			rightSideCustomContent.getChildren().clear();
+			addSideBarInfo(field, rightSideCustomContent, textBox);
+		    }
 		});
+		
+		
 		//Add elements to the display
 		fieldBox.getChildren().add(fieldNameLabel);
 		fieldBox.getChildren().add(textBox);
@@ -114,9 +111,12 @@ public class FXMLDocumentController implements Initializable {
     }
     
     
-    public void addSideBarInfo(Field field, VBox container){
+    public void addSideBarInfo(Field field, VBox container, PacketTextField fieldTextBox){
+	//Allow field to add its own custom items
+	field.getCustomUIDrawer().drawCustomUI(container, fieldTextBox, displayedPacket);
 
-	Label lengthLabel = new Label("Field Length (bits): " + field.getLength());
+	
+	Label lengthLabel = new Label("\nField Length (bits): " + field.getLength());
 	lengthLabel.setWrapText(true);
 	
 	String decimalString = Utilities.hexToDecimal(field.getValueAsString());
@@ -135,17 +135,34 @@ public class FXMLDocumentController implements Initializable {
 	binaryValue.setWrapText(true);
 	
 	container.getChildren().addAll(lengthLabel, decimalValue, bytesAsDecimal, hexValue, binaryValue);
+	
+	
+	
     }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+	configurations = new InternetConfigurations();
         initializePacket();
 	displayPacket(displayedPacket);
-	
     } 
     
     @FXML
     public void sendButtonPressed(ActionEvent e){
+	
+	for (PacketTextField tf: packetTextFields){
+	    StringBuilder s = new StringBuilder();
+	    s.append(tf.getField().getValueAsString());
+	    
+	    /*
+	    for (int i = 0; i < tf.getField().getLength()- tf.getText().length(); i++){
+		s.insert(0, "0");
+		
+	    }
+	    */
+	    tf.setText(s.toString());
+	    System.out.println(s.toString());
+	}
 	RawPacketSender.sendPacket(displayedPacket);
     }
     
@@ -156,7 +173,6 @@ public class FXMLDocumentController implements Initializable {
 	    if(newValue.length() == 0){
 		tf.setText("0");
 		tf.setTextShouldBeZero(true);
-		System.out.println("Set to true");
 	    }else if (!newValue.matches("[0-9a-fA-F]+")){
 		tf.setText(oldValue);
 	    }else if (tf.getText().length() > maxLength) {
@@ -168,7 +184,8 @@ public class FXMLDocumentController implements Initializable {
 	    
 	    field.setValue(Utilities.bitSetFromHex(tf.getText()));
 	    rightSideCustomContent.getChildren().clear();
-	    addSideBarInfo(field, rightSideCustomContent);
+	    addSideBarInfo(field, rightSideCustomContent, tf);
 	});
     }
 }
+    

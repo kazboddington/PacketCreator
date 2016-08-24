@@ -80,6 +80,7 @@ public final class Utilities {
     }
     
     public static String hexToDecimalBytesWithSpaces(String s){
+	
 	if (s.length() % 2 == 1 )
 	    s = "0" + s;
 	    String retVal = "";

@@ -5,12 +5,13 @@
  */
 package packetconstructor;
 
-import com.sun.org.apache.bcel.internal.generic.F2D;
 import java.util.BitSet;
+import javafx.event.ActionEvent;
+import javafx.scene.control.Button;
+import javafx.scene.layout.VBox;
 
 
 public class IPv4Header extends Section{
-    
     private Field version;
     private Field headerLength;
     private Field typeOfService;
@@ -74,16 +75,95 @@ public class IPv4Header extends Section{
 	this.version = new Field("Version", version, 4, "IP version, such as 4 or 6");
 	this.headerLength = new Field("Header Length", headerLength, 4, "The length of this header / 32 (bits)");
 	this.typeOfService = new Field("Type Of Service", typeOfService, 8, "");//TODO
-	this.totalLength = new Field("Total Length", totalLength, 16, "The total Length of the IPv4 Packet");
+	this.totalLength = new Field("Total Length", totalLength, 16, "The total Length of the IPv4 Packet (excluding lower layers)");
+	this.totalLength.setCustomUIDrawer((VBox container, PacketTextField tf, Packet packet)->{
+	    Button setComputeLengthButton = new Button("Compute Length");
+	    setComputeLengthButton.setOnAction((ActionEvent e)->{
+		int total = 0;
+		boolean havePassedLinkLayer = false;
+		for(Section s: packet.getSections()){
+		    if (!havePassedLinkLayer) {
+			havePassedLinkLayer = true;
+			break;
+		    }
+		    for(Field f: s.getFields()){
+			total += f.getLength();
+		    }
+		    System.out.println(Integer.toHexString(total));
+		    String lengthHexValue1 = Integer.toHexString(total);
+		    String lengthHexValue2 = "0000" + lengthHexValue1;
+		    tf.setText(lengthHexValue2.substring(4 + lengthHexValue1.length()));
+		}
+	    });
+	    container.getChildren().add(setComputeLengthButton);
+	});
 	this.identifier = new Field("Identifier", identifier, 16, "");//TODO
 	this.flags = new Field("Flags", flags, 3, "");//TODO
 	this.fragmentOffset = new Field("Fragment Offset", fragmentOffset, 13, "");//TODO
 	this.timeToLive = new Field("Time to Live", timeToLive, 8, "");//TODO
 	this.protocol = new Field("Protocol", protocol, 8, "");
 	this.headerChecksum = new Field("Header Checksum", headerChecksum, 16, "");
+	this.headerChecksum.setCustomUIDrawer((VBox container, PacketTextField tf, Packet packet)->{
+	    Button setChecksumButton = new Button("Compute Checksum");
+	    setChecksumButton.setOnAction((ActionEvent e)->{
+		tf.setText("0");
+		for (Section s: packet.getSections()){
+		    if(s.getName() == "IPv4 Header"){
+			int sum = 0;
+			for(Field f : s.getFields()){
+			    sum += Long.parseLong(f.getValueAsString(), 16);
+			}
+			String checksum = Integer.toHexString(0 - sum);
+			StringBuilder checksumText = new StringBuilder();
+			checksumText.append(checksum);
+			for (int i = 0 ;i < 8 - checksum.length(); i++)
+			    checksumText.insert(0, "0");
+			tf.setText(checksumText.toString().substring(4));
+		    }
+		}
+		
+	    });
+	    container.getChildren().add(setChecksumButton);
+	});
 	this.sourceAddress = new Field("Source Address", sourceAddress, 32, "The IP of the sender of the packet");
-	this.destinationAddress = new Field("Destination Address", destinationAddress, 32, "The IP of the reciever of the packet");
+	this.sourceAddress.setCustomUIDrawer((VBox container, PacketTextField tf, Packet packet)->{
+	    Button setIpButton = new Button("Set to your IP");
+	    setIpButton.setOnAction((ActionEvent e)->{
+		String ip = InternetConfigurations.getIp();
+		StringBuilder s = new StringBuilder();		    
+		System.out.println(ip);
+
+		for(String number : ip.split("\\.")){
+		    System.out.println(number);
+		    String byteOfAddress = Integer.toHexString(Integer.parseInt(number));
+		    if (byteOfAddress.length() == 1) byteOfAddress = "0"+byteOfAddress;
+		    s.append(byteOfAddress);
+		}
+		System.out.println(s.toString());
+		tf.setText(s.toString());
+	    });
+	    container.getChildren().add(setIpButton);
+	});
 	
+	this.destinationAddress = new Field("Destination Address", destinationAddress, 32, "The IP of the reciever of the packet");
+	this.destinationAddress.setCustomUIDrawer((VBox container, PacketTextField tf, Packet packet)->{
+	    Button setIpButton = new Button("Set to your IP");
+	    setIpButton.setOnAction((ActionEvent e)->{
+		String ip = InternetConfigurations.getIp();
+		StringBuilder s = new StringBuilder();		    
+		System.out.println(ip);
+
+		for(String number : ip.split("\\.")){
+		    System.out.println(number);
+		    String byteOfAddress = Integer.toHexString(Integer.parseInt(number));
+		    if (byteOfAddress.length() == 1) byteOfAddress = "0"+byteOfAddress;
+		    s.append(byteOfAddress);
+		}
+		System.out.println(s.toString());
+		tf.setText(s.toString());
+	    });
+	    container.getChildren().add(setIpButton);
+	});
 	super.setName("IPv4 Header");
         super.setNumberOfFields(12);
 	super.setPreferredWidth(32);
